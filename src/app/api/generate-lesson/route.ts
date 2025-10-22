@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@/lib/database.types';
+
+// Type helper to fix Supabase update method typing issue
+type SupabaseUpdatePayload = Partial<Database['public']['Tables']['lessons']['Row']>;
 
 // Use service role key for admin operations
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -15,7 +18,7 @@ if (!openaiApiKey) {
   throw new Error('Missing OpenAI API key');
 }
 
-const supabase = createClient<Database>(supabaseUrl, supabaseServiceKey);
+const supabase: SupabaseClient<Database> = createClient<Database>(supabaseUrl, supabaseServiceKey);
 
 interface RequestBody {
   lessonId: string;
@@ -251,13 +254,14 @@ Generate complete, production-ready TypeScript/TSX code with full type safety an
       console.log("Storage upload failed, using database fallback:", uploadError.message);
       
       // Store the content directly in the database as fallback
-      const { error: updateError } = await supabase
-        .from("lessons")
-        .update({
-          content: generatedContent, // Store content directly
-          status: "generated",
-          updated_at: new Date().toISOString(),
-        })
+      const lessonsTable = supabase.from("lessons");
+      const updatePayload: SupabaseUpdatePayload = {
+        content: generatedContent,
+        status: "generated",
+        updated_at: new Date().toISOString(),
+      };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error: updateError } = await (lessonsTable.update as any)(updatePayload)
         .eq("id", lessonId);
 
       if (updateError) {
@@ -273,13 +277,14 @@ Generate complete, production-ready TypeScript/TSX code with full type safety an
     }
 
     // Update the lesson record with the file path
-    const { error: updateError } = await supabase
-      .from("lessons")
-      .update({
-        file_path: filePath,
-        status: "generated",
-        updated_at: new Date().toISOString(),
-      })
+    const lessonsTable = supabase.from("lessons");
+    const updatePayload: SupabaseUpdatePayload = {
+      file_path: filePath,
+      status: "generated",
+      updated_at: new Date().toISOString(),
+    };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error: updateError } = await (lessonsTable.update as any)(updatePayload)
       .eq("id", lessonId);
 
     if (updateError) {
@@ -301,13 +306,14 @@ Generate complete, production-ready TypeScript/TSX code with full type safety an
 
     if (lessonId) {
       try {
-        await supabase
-          .from("lessons")
-          .update({
-            status: "error",
-            error: errorMessage,
-            updated_at: new Date().toISOString(),
-          })
+        const lessonsTable = supabase.from("lessons");
+        const updatePayload: SupabaseUpdatePayload = {
+          status: "error",
+          error: errorMessage,
+          updated_at: new Date().toISOString(),
+        };
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await (lessonsTable.update as any)(updatePayload)
           .eq("id", lessonId);
       } catch (updateError) {
         console.error("Failed to update lesson with error status:", updateError);

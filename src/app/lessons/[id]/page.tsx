@@ -44,23 +44,25 @@ export default function ViewLesson({ params }: ViewLessonProps) {
           return;
         }
 
-        setLesson(data);
+        // Type assertion to fix Supabase type inference issue
+        const lessonData = data as Lesson;
+        setLesson(lessonData);
 
-        if (data.status === 'generated') {
+        if (lessonData.status === 'generated') {
           let jsContent: string;
 
           try {
             // First try to get content from stored file
-            if (data.file_path) {
+            if (lessonData.file_path) {
               // Download the TSX file from Supabase storage for dynamic import
               const { data: fileData, error: downloadError } = await supabase.storage
                 .from('lesson-files')
-                .download(data.file_path);
+                .download(lessonData.file_path);
                 
               if (downloadError) {
                 console.warn('Storage download failed, trying database content:', downloadError);
-                if (data.content) {
-                  jsContent = data.content;
+                if (lessonData.content) {
+                  jsContent = lessonData.content;
                 } else {
                   throw new Error('No content available in storage or database');
                 }
@@ -68,9 +70,9 @@ export default function ViewLesson({ params }: ViewLessonProps) {
                 // Convert the file to text
                 jsContent = await fileData.text();
               }
-            } else if (data.content) {
+            } else if (lessonData.content) {
               // Use content stored directly in database
-              jsContent = data.content;
+              jsContent = lessonData.content;
             } else {
               throw new Error('No lesson content found');
             }

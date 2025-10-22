@@ -57,13 +57,16 @@ export default function Home() {
     try {
       const title = outline.length > 100 ? outline.substring(0, 100) + '...' : outline;
 
-      const { data: lesson, error: insertError } = await supabase
+      const insertPayload = {
+        title,
+        outline: outline.trim(),
+        status: 'generating' as const,
+      };
+      
+      const { data: lesson, error: insertError } = await (supabase
         .from('lessons')
-        .insert({
-          title,
-          outline: outline.trim(),
-          status: 'generating' as const,
-        })
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .insert as any)(insertPayload)
         .select()
         .single();
 
