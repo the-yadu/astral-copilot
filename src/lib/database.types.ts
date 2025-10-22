@@ -7,6 +7,7 @@ export interface Database {
           title: string
           outline: string
           status: string
+          file_path: string | null
           content: string | null
           error: string | null
           created_at: string
@@ -17,6 +18,7 @@ export interface Database {
           title: string
           outline: string
           status?: string
+          file_path?: string | null
           content?: string | null
           error?: string | null
           created_at?: string
@@ -27,6 +29,7 @@ export interface Database {
           title?: string
           outline?: string
           status?: string
+          file_path?: string | null
           content?: string | null
           error?: string | null
           created_at?: string

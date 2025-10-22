@@ -1,14 +1,16 @@
+'use client';
+
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
-import type { Lesson } from '../lib/database.types';
+import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
+import type { Lesson } from '@/lib/database.types';
 import { BookOpen, Loader2, CheckCircle2 } from 'lucide-react';
 
-export default function GenerateLessons() {
+export default function Home() {
   const [outline, setOutline] = useState('');
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const navigate = useNavigate();
+  const router = useRouter();
 
   useEffect(() => {
     fetchLessons();
@@ -67,12 +69,9 @@ export default function GenerateLessons() {
 
       if (insertError) throw insertError;
 
-      const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-lesson`;
-
-      fetch(apiUrl, {
+      fetch('/api/generate-lesson', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -94,7 +93,7 @@ export default function GenerateLessons() {
 
   const handleLessonClick = (lessonId: string, status: string) => {
     if (status === 'generated') {
-      navigate(`/lessons/${lessonId}`);
+      router.push(`/lessons/${lessonId}`);
     }
   };
 
@@ -120,7 +119,7 @@ export default function GenerateLessons() {
                 id="outline"
                 value={outline}
                 onChange={(e) => setOutline(e.target.value)}
-                placeholder="e.g., A 10 question pop quiz on Florida&#10;or&#10;A one-pager on how to divide with long division"
+                placeholder="e.g., A 10 question pop quiz on Florida or A one-pager on how to divide with long division"
                 className="w-full h-32 px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-400 focus:border-transparent resize-none text-slate-800 placeholder-slate-400"
                 required
               />
@@ -179,6 +178,13 @@ export default function GenerateLessons() {
                             <>
                               <Loader2 className="w-4 h-4 text-amber-500 animate-spin" />
                               <span className="text-sm font-medium text-amber-600">Generating</span>
+                            </>
+                          ) : lesson.status === 'error' ? (
+                            <>
+                              <div className="w-4 h-4 rounded-full bg-red-500 flex items-center justify-center">
+                                <span className="text-white text-xs">!</span>
+                              </div>
+                              <span className="text-sm font-medium text-red-600">Error</span>
                             </>
                           ) : (
                             <>
