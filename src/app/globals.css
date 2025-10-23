@@ -1,1 +1,12 @@
 @import "tailwindcss";
+
+/* Ensure critical base styles are available */
+body {
+  @apply font-sans antialiased;
+}
+
+/* Force include commonly generated classes by using them in pseudo-selectors */
+html:before {
+  content: '';
+  @apply text-slate-900;
+}
