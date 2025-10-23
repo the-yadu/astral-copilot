@@ -26,13 +26,16 @@ interface RequestBody {
 }
 
 export async function POST(req: NextRequest) {
+  let lessonId: string | undefined;
+  
   try {
     const body: RequestBody = await req.json();
-    const { lessonId, outline } = body;
+    lessonId = body.lessonId; // Store lessonId for error handling
+    const { outline } = body;
 
     if (!lessonId || !outline) {
       return NextResponse.json(
-        { success: false, error: 'Missing required fields' },
+        { success: false, error: 'Missing required fields: lessonId and outline are required' },
         { status: 400 }
       );
     }
@@ -265,32 +268,57 @@ Generate creative, engaging, and educationally effective TypeScript/TSX code tha
   } catch (error) {
     console.error("Error generating lesson:", error);
 
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    // Create a more descriptive error message
+    let errorMessage = "Unknown error occurred during lesson generation";
+    
+    if (error instanceof Error) {
+      if (error.message.includes('OpenAI')) {
+        errorMessage = `AI Service Error: ${error.message}`;
+      } else if (error.message.includes('storage') || error.message.includes('Storage')) {
+        errorMessage = `File Storage Error: ${error.message}`;
+      } else if (error.message.includes('database') || error.message.includes('Database')) {
+        errorMessage = `Database Error: ${error.message}`;
+      } else if (error.message.includes('network') || error.message.includes('Network')) {
+        errorMessage = `Network Error: ${error.message}`;
+      } else if (error.message.includes('timeout') || error.message.includes('Timeout')) {
+        errorMessage = `Request Timeout: The lesson generation took too long`;
+      } else {
+        errorMessage = `Generation Error: ${error.message}`;
+      }
+    }
 
     // Update the lesson with error status if we have a lessonId
-    const body = await req.json().catch(() => ({}));
-    const lessonId = body.lessonId;
-
     if (lessonId) {
       try {
+        console.log(`Updating lesson ${lessonId} with error status: ${errorMessage}`);
         const lessonsTable = supabase.from("lessons");
         const updatePayload: SupabaseUpdatePayload = {
-          status: "error",
+          status: "failed",
           error: errorMessage,
           updated_at: new Date().toISOString(),
         };
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        await (lessonsTable.update as any)(updatePayload)
+        const { error: updateError } = await (lessonsTable.update as any)(updatePayload)
           .eq("id", lessonId);
+          
+        if (updateError) {
+          console.error("Failed to update lesson with error status:", updateError);
+          // Still return the original error, but log the update failure
+        } else {
+          console.log(`Successfully updated lesson ${lessonId} status to failed`);
+        }
       } catch (updateError) {
-        console.error("Failed to update lesson with error status:", updateError);
+        console.error("Exception while updating lesson with error status:", updateError);
       }
+    } else {
+      console.error("No lessonId available for error status update");
     }
 
     return NextResponse.json(
       {
         success: false,
         error: errorMessage,
+        lessonId: lessonId || null,
       },
       { status: 500 }
     );

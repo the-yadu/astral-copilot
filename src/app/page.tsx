@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import type { Lesson } from '@/lib/database.types';
-import { BookOpen, Loader2, CheckCircle2 } from 'lucide-react';
+import { BookOpen, Loader2, CheckCircle2, AlertCircle, RotateCcw, Info } from 'lucide-react';
 
 export default function Home() {
   const [outline, setOutline] = useState('');
@@ -81,7 +81,13 @@ export default function Home() {
           lessonId: lesson.id,
           outline: outline.trim(),
         }),
-      }).catch(err => {
+      })
+      .then(response => {
+        if (!response.ok) {
+          console.error('Lesson generation request failed:', response.status, response.statusText);
+        }
+      })
+      .catch(err => {
         console.error('Error triggering lesson generation:', err);
       });
 
@@ -97,6 +103,47 @@ export default function Home() {
   const handleLessonClick = (lessonId: string, status: string) => {
     if (status === 'generated') {
       router.push(`/lessons/${lessonId}`);
+    }
+  };
+
+  const handleRetry = async (lessonId: string, outline: string, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent row click
+    
+    try {
+      // Update status to generating
+      const { error: updateError } = await (supabase
+        .from('lessons')
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .update as any)({ 
+          status: 'generating',
+          error: null,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', lessonId);
+
+      if (updateError) {
+        console.error('Error updating lesson status:', updateError);
+        alert('Failed to retry lesson generation. Please try again.');
+        return;
+      }
+
+      // Trigger regeneration
+      fetch('/api/generate-lesson', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          lessonId,
+          outline,
+        }),
+      }).catch(err => {
+        console.error('Error triggering lesson regeneration:', err);
+      });
+
+    } catch (error) {
+      console.error('Error retrying lesson:', error);
+      alert('Failed to retry lesson generation. Please try again.');
     }
   };
 
@@ -161,6 +208,7 @@ export default function Home() {
                     <th className="px-8 py-4 text-left text-sm font-semibold text-slate-700">Title</th>
                     <th className="px-8 py-4 text-left text-sm font-semibold text-slate-700">Status</th>
                     <th className="px-8 py-4 text-left text-sm font-semibold text-slate-700">Created</th>
+                    <th className="px-8 py-4 text-left text-sm font-semibold text-slate-700">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200">
@@ -171,6 +219,8 @@ export default function Home() {
                       className={`transition-colors ${
                         lesson.status === 'generated'
                           ? 'hover:bg-slate-50 cursor-pointer'
+                          : lesson.status === 'error' || lesson.status === 'failed'
+                          ? 'hover:bg-red-50 cursor-default'
                           : 'cursor-default'
                       }`}
                     >
@@ -182,13 +232,23 @@ export default function Home() {
                               <Loader2 className="w-4 h-4 text-amber-500 animate-spin" />
                               <span className="text-sm font-medium text-amber-600">Generating</span>
                             </>
-                          ) : lesson.status === 'error' ? (
-                            <>
-                              <div className="w-4 h-4 rounded-full bg-red-500 flex items-center justify-center">
-                                <span className="text-white text-xs">!</span>
-                              </div>
-                              <span className="text-sm font-medium text-red-600">Error</span>
-                            </>
+                          ) : lesson.status === 'error' || lesson.status === 'failed' ? (
+                            <div className="flex items-center gap-2">
+                              <AlertCircle className="w-4 h-4 text-red-500" />
+                              <span className="text-sm font-medium text-red-600">
+                                {lesson.status === 'failed' ? 'Failed' : 'Error'}
+                              </span>
+                              {lesson.error && (
+                                <div className="group relative">
+                                  <Info className="w-3 h-3 text-slate-400 hover:text-slate-600 cursor-help" />
+                                  <div className="opacity-0 group-hover:opacity-100 absolute left-0 top-full mt-1 z-20 w-80 bg-gray-900 text-white text-xs rounded-lg px-4 py-3 shadow-xl transition-opacity duration-200 pointer-events-none">
+                                    <div className="font-medium mb-1">Error Details:</div>
+                                    <div className="text-gray-200">{lesson.error}</div>
+                                    <div className="absolute -top-1 left-4 w-2 h-2 bg-gray-900 rotate-45"></div>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
                           ) : (
                             <>
                               <CheckCircle2 className="w-4 h-4 text-emerald-500" />
@@ -205,6 +265,24 @@ export default function Home() {
                           hour: '2-digit',
                           minute: '2-digit',
                         })}
+                      </td>
+                      <td className="px-8 py-4">
+                        {(lesson.status === 'error' || lesson.status === 'failed') && (
+                          <button
+                            onClick={(e) => handleRetry(lesson.id, lesson.outline, e)}
+                            className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-md transition-colors duration-200"
+                            title="Retry lesson generation"
+                          >
+                            <RotateCcw className="w-3 h-3" />
+                            Retry
+                          </button>
+                        )}
+                        {lesson.status === 'generated' && (
+                          <span className="text-sm text-slate-400">View</span>
+                        )}
+                        {lesson.status === 'generating' && (
+                          <span className="text-sm text-slate-400">Processing...</span>
+                        )}
                       </td>
                     </tr>
                   ))}
