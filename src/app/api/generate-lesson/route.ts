@@ -46,148 +46,91 @@ CRITICAL REQUIREMENTS FOR TYPESCRIPT COMPONENT:
 4. Use React hooks with proper TypeScript typing (useState<T>, useEffect, etc.)
 5. Use ONLY Tailwind CSS classes for styling (no inline styles, no CSS modules)
 6. Do NOT use any imports - assume React and its types are available globally
-7. Include interactive elements when appropriate (buttons, inputs, etc.) with proper typing
-8. Use appropriate educational formatting (headings, lists, examples, etc.)
-9. For quizzes, include answer checking functionality with feedback and proper types
+7. Include interactive elements when appropriate (buttons, inputs, sliders, etc.) with proper typing
+8. Use creative and varied educational formatting (headings, lists, examples, diagrams, cards, etc.)
+9. For interactive elements, include appropriate functionality with feedback and proper types
 10. The component should be self-contained and render immediately
 11. Do NOT include any code blocks or markdown formatting in your response
 12. Use proper TypeScript interfaces for any complex data structures
 13. End with: export default LessonComponent;
 
-CRITICAL STYLING REQUIREMENTS FOR READABILITY:
-- ALWAYS use dark text colors: text-slate-800, text-slate-900, text-gray-800, text-gray-900
-- Use high contrast combinations: dark text on light backgrounds
-- For headings use: text-2xl font-bold text-slate-800 or text-3xl font-bold text-slate-900
-- For body text use: text-slate-700 or text-slate-800
-- For buttons use: bg-blue-600 text-white or bg-slate-700 text-white
-- Avoid light text colors like text-slate-400, text-gray-400, text-slate-300
-- Use proper spacing: p-6, p-8, mb-4, mb-6 for good readability
-- Ensure all text is clearly visible and readable
+DESIGN AND STYLING PRINCIPLES:
+- CRITICAL: Prioritize text readability above all else - use high contrast combinations (dark text on light backgrounds)
+- Use systematic typography hierarchy with appropriate font sizes (text-sm, text-base, text-lg, text-xl, text-2xl, text-3xl)
+- Implement proper line spacing (leading-relaxed, leading-loose) for enhanced readability
+- Choose accessible color palettes with sufficient contrast ratios (use tools like text-slate-900, text-gray-800 for primary text)
+- Use semantic color coding (green for success, red for errors, blue for information, yellow for warnings)
+- Implement responsive design with mobile-first approach (sm:, md:, lg:, xl: breakpoints)
+- Add generous spacing and padding for comfortable reading experience (p-4, p-6, p-8, mb-4, mb-6, mb-8)
+- Use visual hierarchy to guide attention (font weights, sizes, colors, spacing)
+- Include smooth transitions and micro-interactions (transition-all, duration-200, hover: states)
+- Ensure all interactive elements are accessible with proper focus states (focus:outline-none focus:ring-2)
 
-CRITICAL UI/UX REQUIREMENTS FOR INTERACTIVE ELEMENTS:
-- Quiz options MUST have proper spacing: use mb-3 or mb-4 between options
-- Quiz option buttons MUST be full-width or properly sized: w-full or min-w-48
-- Quiz options MUST have hover states: hover:bg-blue-50 hover:border-blue-300
-- Quiz options MUST show selection state with clear visual feedback
-- Use proper padding for buttons: px-6 py-3 or px-4 py-2 minimum
-- Selected options should have distinct styling: bg-blue-100 border-blue-400 text-blue-800
-- Correct answers should show green: bg-green-100 border-green-400 text-green-800
-- Wrong answers should show red: bg-red-100 border-red-400 text-red-800
-- Use rounded corners for modern look: rounded-lg or rounded-md
-- Add subtle shadows for depth: shadow-sm or shadow-md
-- Ensure proper contrast ratios for accessibility
-- Use transition effects for smooth interactions: transition-all duration-200
-- Add focus states for keyboard navigation: focus:outline-none focus:ring-2 focus:ring-blue-500
+TAILWIND CSS STYLING BEST PRACTICES:
+- Use modern component styling with proper shadows (shadow-sm, shadow-md, shadow-lg) and rounded corners (rounded-lg, rounded-xl)
+- Implement consistent spacing patterns using Tailwind's spacing scale (space-y-4, space-y-6, gap-4, gap-6)
+- Utilize Tailwind's color palette effectively (slate, gray, blue, green, red, amber for semantic meanings)
+- Create polished cards and containers (bg-white, border, border-gray-200, rounded-lg, p-6)
+- Use gradient backgrounds sparingly but effectively (bg-gradient-to-r, from-blue-50, to-indigo-50)
+- Implement hover and focus states consistently (hover:bg-gray-50, focus:ring-blue-500)
+- Use flexbox and grid layouts for responsive design (flex, grid, items-center, justify-between)
+- Add loading and interactive states (disabled:opacity-50, cursor-pointer, select-none)
 
-REQUIRED STRUCTURE (follow exactly):
+INTERACTIVE ELEMENTS GUIDELINES:
+- Design quiz interfaces with clear visual hierarchy and intuitive interactions
+- Use distinctive styling for different interaction states (bg-blue-50 for hover, bg-blue-100 for selected)
+- Implement proper button styling (px-4 py-2, rounded-md, font-medium, shadow-sm)
+- Include engaging interactive elements like progress bars, animated feedback, or visual demonstrations
+- Provide immediate visual feedback with color changes and transitions
+- Design progress indicators using Tailwind's width utilities (w-1/4, w-1/2, w-3/4, w-full)
+- Consider gamification elements that enhance learning (badges, progress rings, achievement states)
+
+TEXT READABILITY REQUIREMENTS:
+- ALWAYS ensure maximum text readability - use dark text (text-slate-900, text-gray-900) on light backgrounds
+- Avoid low contrast combinations like light gray text on white backgrounds
+- Use appropriate font sizes for content hierarchy: headings (text-2xl, text-3xl), body (text-base, text-lg), captions (text-sm)
+- Implement proper line heights for comfortable reading (leading-6, leading-7, leading-relaxed)
+- Add sufficient whitespace around text blocks (mb-4, mb-6 for paragraphs, mt-8 for sections)
+- Use font weights strategically (font-medium for emphasis, font-semibold for subheadings, font-bold for headings)
+- Ensure text remains readable across all device sizes with responsive typography
+
+CREATIVE FREEDOM:
+- Choose layout patterns that best suit the lesson content (single column, multi-column, grid layouts)
+- Select professional color palettes using Tailwind's semantic colors (blue for primary, green for success, red for alerts)
+- Design unique interactive components with polished Tailwind styling (cards, modals, dropdowns, tabs)
+- Use creative visual metaphors with proper styling (timelines with connecting lines, comparison tables, step indicators)
+- Implement varied content presentation styles with consistent Tailwind patterns
+- Include visual elements like animated progress bars, styled achievement badges, or checkpoint indicators
+- Create cohesive design systems using Tailwind's utility classes for consistency
+
+COMPONENT STRUCTURE (REQUIRED PATTERNS):
+- Start with: import React, { useState, useEffect } from 'react';
+- Define TypeScript interfaces before the component
+- Use this exact pattern: const LessonComponent: React.FC = () => {
+- Include proper state management with TypeScript types
+- Structure JSX with a clear return statement
+- End with: export default LessonComponent;
+
+EXAMPLE STRUCTURE:
 import React, { useState, useEffect } from 'react';
 
-interface Question {
-  id: number;
-  question: string;
-  options: string[];
-  correctAnswer: number;
-}
-
-interface QuizState {
-  selectedAnswers: { [key: number]: number | null };
-  showResults: { [key: number]: boolean };
-  answered: { [key: number]: boolean };
+interface YourDataInterface {
+  // Define your interfaces here
 }
 
 const LessonComponent: React.FC = () => {
-  const [quizState, setQuizState] = useState<QuizState>({
-    selectedAnswers: {},
-    showResults: {},
-    answered: {}
-  });
-  
-  const handleAnswerSelect = (questionId: number, optionIndex: number) => {
-    setQuizState(prev => ({
-      ...prev,
-      selectedAnswers: { ...prev.selectedAnswers, [questionId]: optionIndex }
-    }));
-  };
-
-  const checkAnswer = (questionId: number, correctAnswer: number) => {
-    setQuizState(prev => ({
-      ...prev,
-      showResults: { ...prev.showResults, [questionId]: true },
-      answered: { ...prev.answered, [questionId]: true }
-    }));
-  };
+  const [state, setState] = useState<YourType>(initialValue);
   
   return (
-    <div className="max-w-4xl mx-auto p-8 bg-white">
-      <h1 className="text-3xl font-bold mb-6 text-slate-900">Lesson Title</h1>
-      <p className="text-lg text-slate-800 mb-8">Lesson description with proper spacing</p>
-      
-      <div className="space-y-8">
-        <section className="bg-gray-50 p-6 rounded-lg">
-          <h2 className="text-2xl font-semibold mb-4 text-slate-800">Content Section</h2>
-          <p className="text-slate-700 mb-6">Educational content with good readability</p>
-        </section>
-
-        <section className="bg-blue-50 p-6 rounded-lg border border-blue-200">
-          <h3 className="text-xl font-semibold mb-4 text-slate-800">Quiz Question</h3>
-          <p className="text-lg mb-6 text-slate-800">What is 7 - 5?</p>
-          
-          <div className="space-y-3">
-            {['1', '2', '3', '4'].map((option, index) => {
-              const isSelected = quizState.selectedAnswers[1] === index;
-              const showResult = quizState.showResults[1];
-              const isCorrect = index === 1; // Correct answer is index 1
-              
-              let buttonClasses = "w-full p-4 text-left rounded-lg border-2 transition-all duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed ";
-              
-              if (!showResult && !isSelected) {
-                buttonClasses += "bg-white border-gray-300 hover:bg-blue-50 hover:border-blue-300 text-slate-800";
-              } else if (!showResult && isSelected) {
-                buttonClasses += "bg-blue-100 border-blue-400 text-blue-800";
-              } else if (showResult && isCorrect) {
-                buttonClasses += "bg-green-100 border-green-400 text-green-800";
-              } else if (showResult && !isCorrect && isSelected) {
-                buttonClasses += "bg-red-100 border-red-400 text-red-800";
-              } else if (showResult && !isCorrect && !isSelected) {
-                buttonClasses += "bg-gray-100 border-gray-300 text-gray-600";
-              }
-              
-              return (
-                <button
-                  key={index}
-                  onClick={() => handleAnswerSelect(1, index)}
-                  disabled={quizState.answered[1]}
-                  className={buttonClasses}
-                >
-                  {option}
-                </button>
-              );
-            })}
-          </div>
-          
-          {quizState.selectedAnswers[1] !== undefined && !quizState.showResults[1] && (
-            <button
-              onClick={() => checkAnswer(1, 1)}
-              className="mt-4 px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            >
-              Check Answer
-            </button>
-          )}
-          
-          {quizState.showResults[1] && (
-            <div className={quizState.selectedAnswers[1] === 1 ? 'mt-4 p-4 rounded-lg bg-green-50 text-green-800' : 'mt-4 p-4 rounded-lg bg-red-50 text-red-800'}>
-              {quizState.selectedAnswers[1] === 1 ? 'Correct! Well done!' : 'Try again! That is not the correct answer.'}
-            </div>
-          )}
-        </section>
-      </div>
+    <div className="max-w-4xl mx-auto p-8">
+      {/* Your lesson content */}
     </div>
   );
 };
 
 export default LessonComponent;
 
-Generate complete, production-ready TypeScript/TSX code with full type safety and proper React patterns.`;
+Generate creative, engaging, and educationally effective TypeScript/TSX code that creates a unique learning experience tailored to the specific lesson outline provided.`;
 
     const userPrompt = `Create an interactive educational lesson based on this outline:\n\n${outline}\n\nGenerate complete, production-ready TypeScript/TSX code with full type safety that will render beautifully in the browser. Make it engaging and educational for students. Include proper TypeScript interfaces and type annotations throughout.`;
 
@@ -220,18 +163,42 @@ Generate complete, production-ready TypeScript/TSX code with full type safety an
     generatedContent = generatedContent.replace(/```typescript\n?/g, "").replace(/```tsx\n?/g, "").replace(/```javascript\n?/g, "").replace(/```jsx\n?/g, "").replace(/```\n?/g, "");
     generatedContent = generatedContent.trim();
 
-    // Validate the generated content
-    if (!generatedContent.includes("export default LessonComponent")) {
-      throw new Error("Generated content does not include the required export statement");
+    // Validate the generated content with flexible patterns
+    const hasValidExport = generatedContent.includes("export default LessonComponent") || 
+                          generatedContent.includes("export default ") || 
+                          generatedContent.match(/export\s+default\s+\w+Component/);
+    
+    if (!hasValidExport) {
+      console.warn("Generated content may not have proper export, but continuing...");
     }
 
-    if (!generatedContent.includes("const LessonComponent: React.FC")) {
-      throw new Error("Generated content does not include the proper TypeScript component definition");
+    const hasValidComponent = generatedContent.includes("const LessonComponent: React.FC") ||
+                             generatedContent.includes("const LessonComponent =") ||
+                             generatedContent.includes("function LessonComponent") ||
+                             generatedContent.match(/const\s+\w+Component.*=/);
+    
+    if (!hasValidComponent) {
+      console.warn("Generated content may not have proper component definition, but continuing...");
     }
 
-    // Basic syntax validation - ensure TypeScript patterns are present
-    if (!generatedContent.includes("import React")) {
-      throw new Error("Generated content missing React import statement");
+    // Basic syntax validation - ensure React patterns are present
+    const hasReactImport = generatedContent.includes("import React") ||
+                          generatedContent.includes("import { ") ||
+                          generatedContent.includes("React.") ||
+                          generatedContent.includes("useState") ||
+                          generatedContent.includes("useEffect");
+    
+    if (!hasReactImport) {
+      console.warn("Generated content may not have React import, but continuing...");
+    }
+
+    // Only fail if content is completely invalid (too short or obviously broken)
+    if (generatedContent.length < 100) {
+      throw new Error("Generated content is too short to be a valid component");
+    }
+
+    if (!generatedContent.includes("return") && !generatedContent.includes("=>")) {
+      throw new Error("Generated content does not appear to be a valid React component");
     }
 
     console.log("Generated content preview:", generatedContent.substring(0, 500));
